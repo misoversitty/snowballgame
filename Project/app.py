@@ -2,6 +2,7 @@ import pygame
 from Entities.Player import Player
 from Entities.Bullet import Bullet
 from Services.Controls import Controls
+from Services.CollisionDetector import CollisionDetector
 
 SCREEN_SIZE = [800, 600]
 FPS = 30
@@ -60,7 +61,6 @@ while running:
                     player.startMoveLeft()
                 if key == player.controls.right:
                     player.startMoveRight()
-
 
         if event.type == pygame.QUIT:
             running = False

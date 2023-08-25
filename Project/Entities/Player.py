@@ -6,6 +6,7 @@ from Project.Services.ImageContainer import ImageContainer
 from Project.Services.ImageLoader import ImageLoader
 from Project.Services.Speed import Speed
 
+
 PLAYER_SPEED = 5
 PLAYER_INERTIA = [1, 1]
 PLAYER_BLINK_PERIOD = 0.5
@@ -126,25 +127,20 @@ class Player(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
 
     def checkForCollision(self):
-        if pygame.sprite.spritecollideany(self, BULLETS):
-            print(f'Player #{self.number} collided with bullet')
-        for i in PLAYERS:
-            if self.number == i.number:
-                continue
-            if a := pygame.sprite.collide_mask(self, i):
-                if a[0] and a[1] < 10:
-                    self.state['BLOCK_UP'] = True
-                if a[0] and a[1] > 20:
-                    self.state['BLOCK_DOWN'] = True
-                if a[0] < 10 and a[1]:
-                    self.state['BLOCK_LEFT'] = True
-                if a[0] > 20 and a[1]:
-                    self.state['BLOCK_RIGHT'] = True
-            else:
-                self.state['BLOCK_UP'] = False
-                self.state['BLOCK_DOWN'] = False
-                self.state['BLOCK_LEFT'] = False
-                self.state['BLOCK_RIGHT'] = False
+        if a := pygame.sprite.spritecollideany():
+            if a[0] and a[1] < 10:
+                self.state['BLOCK_UP'] = True
+            if a[0] and a[1] > 20:
+                self.state['BLOCK_DOWN'] = True
+            if a[0] < 10 and a[1]:
+                self.state['BLOCK_LEFT'] = True
+            if a[0] > 20 and a[1]:
+                self.state['BLOCK_RIGHT'] = True
+        else:
+            self.state['BLOCK_UP'] = False
+            self.state['BLOCK_DOWN'] = False
+            self.state['BLOCK_LEFT'] = False
+            self.state['BLOCK_RIGHT'] = False
 
     def modifySpeed(self):
         if self.state['STARTING_AXIS_X'] is True:
@@ -198,7 +194,7 @@ class Player(pygame.sprite.Sprite):
         self.pickImageKitAccordingToFacing()
         self.pickImage()
         self.reloadMask()
-        #self.checkForCollision()
+        # self.checkForCollision()
         self.maxSpeed = self.speed.module['ortho'] if self.speed.dx * self.speed.dy == 0 else self.speed.module['side']
         self.modifySpeed()
         self.limitSpeed()

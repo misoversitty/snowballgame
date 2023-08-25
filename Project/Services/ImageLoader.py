@@ -1,7 +1,7 @@
 import pathlib
 import pygame
 
-GAME_DIRECTORY = "D:\my shit\ProgProjects\snowballgame\Project"
+GAME_DIRECTORY = pathlib.Path.cwd()  # "D:\my shit\ProgProjects\snowballgame\Project"
 
 
 class ImageLoader:
