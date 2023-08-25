@@ -1,10 +1,10 @@
 from random import randint
 
 import pygame
-import Project.Services.Facing as Facing
-import Project.Services.ImageContainer as ImageContainer
-import Project.Services.ImageLoader as ImageLoader
-import Project.Services.Speed as Speed
+from Project.Services.Facing import Facing
+from Project.Services.ImageContainer import ImageContainer
+from Project.Services.ImageLoader import ImageLoader
+from Project.Services.Speed import Speed
 
 PLAYER_SPEED = 5
 PLAYER_INERTIA = [1, 1]
@@ -12,7 +12,7 @@ PLAYER_BLINK_PERIOD = 0.5
 
 
 class Player(pygame.sprite.Sprite):
-    imageContainer = ImageContainer.ImageContainer(ImageLoader.LoadImage('p1.png'), ImageLoader.LoadImage('p12.png'))
+    imageContainer = ImageContainer(ImageLoader.LoadImage('p1.png'), ImageLoader.LoadImage('p12.png'))
 
     def __init__(self, *groups, number):
         super().__init__(*groups)
@@ -24,8 +24,8 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (randint(200, 600), randint(300, 500))
         self.controls = None
-        self.facing = Facing.Facing()
-        self.speed = Speed.Speed(PLAYER_SPEED)
+        self.facing = Facing()
+        self.speed = Speed(maxSpeed=PLAYER_SPEED)
         self.acceleration = PLAYER_INERTIA
         self.state = {'MOVING': False,
                       'STARTING_AXIS_X': False,

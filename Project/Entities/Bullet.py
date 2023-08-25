@@ -1,5 +1,6 @@
 import pygame
-import Project.Services.ImageLoader as ImageLoader
+from Project.Services.ImageLoader import ImageLoader
+
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, *groups, **kwargs):

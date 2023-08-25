@@ -1,7 +1,7 @@
 import pygame
-import Entities.Player as Player
-import Entities.Bullet as Bullet
-import Services.Controls as Controls
+from Entities.Player import Player
+from Entities.Bullet import Bullet
+from Services.Controls import Controls
 
 SCREEN_SIZE = [800, 600]
 FPS = 30
@@ -15,7 +15,7 @@ BULLETS = pygame.sprite.Group()
 
 def initPlayers(number: int):
     for i in range(number):
-        _ = Player.Player(ALL_SPRITES, number=i)
+        _ = Player(ALL_SPRITES, number=i)
         PLAYERS.append(_)
 
 
@@ -27,9 +27,9 @@ clock = pygame.time.Clock()
 running = True
 
 initPlayers(number=NUMBER_OF_PLAYERS)
-PLAYERS[0].controls = Controls.Controls(['w', 's', 'a', 'd'])
-PLAYERS[1].controls = Controls.Controls(['i', 'k', 'j', 'l'])
-bullet1 = Bullet.Bullet(ALL_SPRITES, BULLETS)
+PLAYERS[0].controls = Controls(['w', 's', 'a', 'd'])
+PLAYERS[1].controls = Controls(['i', 'k', 'j', 'l'])
+bullet1 = Bullet(ALL_SPRITES, BULLETS)
 
 count = 0
 while running:

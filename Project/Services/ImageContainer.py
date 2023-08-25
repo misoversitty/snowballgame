@@ -1,4 +1,4 @@
-import Project.Services.ImageLoader as ImageLoader
+from Project.Services.ImageLoader import ImageLoader
 
 class ImageContainer:
     def __init__(self, *imgs):
