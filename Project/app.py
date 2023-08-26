@@ -31,7 +31,7 @@ initPlayers(number=NUMBER_OF_PLAYERS)
 PLAYERS[0].controls = Controls(['w', 's', 'a', 'd'])
 PLAYERS[1].controls = Controls(['i', 'k', 'j', 'l'])
 bullet1 = Bullet(ALL_SPRITES, BULLETS)
-
+print(type(BULLETS))
 count = 0
 while running:
     count += 1
@@ -66,6 +66,8 @@ while running:
             running = False
 
     # Обновление
+    #for player in PLAYERS:
+    #    CollisionDetector.isCollided(player, PLAYERS)
     ALL_SPRITES.update()
 
     # Визуализация (сборка)
