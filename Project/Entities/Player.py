@@ -24,6 +24,7 @@ class Player(pygame.sprite.Sprite):
         self.image = self.imageKit[self.countWhileMoving]
         self.rect = self.image.get_rect()
         self.rect.center = (randint(200, 600), randint(300, 500))
+        self.mask = pygame.mask.from_surface(self.image)
         self.controls = None
         self.facing = Facing()
         self.speed = Speed(maxSpeed=PLAYER_SPEED)
@@ -194,7 +195,6 @@ class Player(pygame.sprite.Sprite):
         self.pickImageKitAccordingToFacing()
         self.pickImage()
         self.reloadMask()
-        # self.checkForCollision()
         self.maxSpeed = self.speed.module['ortho'] if self.speed.dx * self.speed.dy == 0 else self.speed.module['side']
         self.modifySpeed()
         self.limitSpeed()

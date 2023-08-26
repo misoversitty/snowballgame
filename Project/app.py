@@ -3,6 +3,7 @@ from Entities.Player import Player
 from Entities.Bullet import Bullet
 from Services.Controls import Controls
 from Services.CollisionDetector import CollisionDetector
+from Services.Collision import Collision
 
 SCREEN_SIZE = [800, 600]
 FPS = 30
@@ -10,13 +11,14 @@ FPS = 30
 NUMBER_OF_PLAYERS = 2
 
 PLAYERS = []
-ALL_SPRITES = pygame.sprite.Group()
-BULLETS = pygame.sprite.Group()
+G_ALL_SPRITES = pygame.sprite.Group()
+G_PLAYERS = pygame.sprite.Group()
+G_BULLETS = pygame.sprite.Group()
 
 
 def initPlayers(number: int):
     for i in range(number):
-        _ = Player(ALL_SPRITES, number=i)
+        _ = Player(G_ALL_SPRITES, G_PLAYERS, number=i)
         PLAYERS.append(_)
 
 
@@ -30,8 +32,7 @@ running = True
 initPlayers(number=NUMBER_OF_PLAYERS)
 PLAYERS[0].controls = Controls(['w', 's', 'a', 'd'])
 PLAYERS[1].controls = Controls(['i', 'k', 'j', 'l'])
-bullet1 = Bullet(ALL_SPRITES, BULLETS)
-print(type(BULLETS))
+bullet1 = Bullet(G_ALL_SPRITES, G_BULLETS)
 count = 0
 while running:
     count += 1
@@ -66,14 +67,17 @@ while running:
             running = False
 
     # Обновление
-    #for player in PLAYERS:
-    #    CollisionDetector.isCollided(player, PLAYERS)
-    ALL_SPRITES.update()
+    for player in PLAYERS:
+        if collisionContainer := CollisionDetector.isCollided(player, G_PLAYERS):
+            for collision in collisionContainer:
+                pass
+            #print("mehr")
+    G_ALL_SPRITES.update()
 
     # Визуализация (сборка)
     screen.fill((255, 255, 255))
 
-    ALL_SPRITES.draw(screen)
+    G_ALL_SPRITES.draw(screen)
     pygame.display.flip()
 
     if count % 30 == 0:
