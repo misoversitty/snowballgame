@@ -30,59 +30,52 @@ clock = pygame.time.Clock()
 running = True
 
 initPlayers(number=NUMBER_OF_PLAYERS)
-PLAYERS[0].controls = Controls(['w', 's', 'a', 'd'])
-PLAYERS[1].controls = Controls(['i', 'k', 'j', 'l'])
+PLAYERS[0].controls = Controls(k_up='w', k_down='s', k_left='a', k_right='d')
+PLAYERS[1].controls = Controls(k_up='i', k_down='k', k_left='j', k_right='l')
 bullet1 = Bullet(G_ALL_SPRITES, G_BULLETS)
 count = 0
-while running:
-    count += 1
-    clock.tick(FPS)
-    # Обработка событий
-    for event in pygame.event.get():
-        if event.type == pygame.KEYUP:
-            key = event.dict['unicode']
-            for player in PLAYERS:
-                if key == player.controls.up:
-                    player.stopMoveUp()
-                if key == player.controls.down:
-                    player.stopMoveDown()
-                if key == player.controls.left:
-                    player.stopMoveLeft()
-                if key == player.controls.right:
-                    player.stopMoveRight()
+class App:
+    def __init__(self):
+        pygame.init()
+        pygame.mixer.init()
+        self.screen = pygame.display.set_mode(SCREEN_SIZE)
+        pygame.display.set_caption("DudeGame")
+        self.clock = pygame.time.Clock()
+        self.running = True
 
-        if event.type == pygame.KEYDOWN:
-            key = event.dict['unicode']
-            for player in PLAYERS:
-                if key == player.controls.up:
-                    player.startMoveUp()
-                if key == player.controls.down:
-                    player.startMoveDown()
-                if key == player.controls.left:
-                    player.startMoveLeft()
-                if key == player.controls.right:
-                    player.startMoveRight()
+    def run(self):
+        while self.running:
+            self.clock.tick(FPS)
+            for event in pygame.event.get():
+                if event.type == pygame.KEYUP:
+                    keyReleased = event.dict['unicode']
+                    for player in PLAYERS:
+                        if keyReleased in player.controls.assignment:
+                            execute = f"stop{player.controls.assignment[keyReleased]}"
+                            player.__getattribute__(execute).__call__()
 
-        if event.type == pygame.QUIT:
-            running = False
+                if event.type == pygame.KEYDOWN:
+                    keyPressed = event.dict['unicode']
+                    for player in PLAYERS:
+                        if keyPressed in player.controls.assignment:
+                            execute = f"start{player.controls.assignment[keyPressed]}"
+                            player.__getattribute__(execute).__call__()
 
-    # Обновление
-    for player in PLAYERS:
-        if collisionContainer := CollisionDetector.isCollided(player, G_PLAYERS):
-            for collision in collisionContainer:
-                pass
-            #print("mehr")
-    G_ALL_SPRITES.update()
+                if event.type == pygame.QUIT:
+                    self.running = False
 
-    # Визуализация (сборка)
-    screen.fill((255, 255, 255))
+            if collisionContainer := CollisionDetector.isCollided(PLAYERS[0], G_PLAYERS):
+                for collision in collisionContainer:
+                    PLAYERS[0].state[f"BLOCK_{collision.sideOfMainSprite}"] = True
+            G_ALL_SPRITES.update()
 
-    G_ALL_SPRITES.draw(screen)
-    pygame.display.flip()
+            screen.fill((255, 255, 255))
 
-    if count % 30 == 0:
-        # print(dude1.speed.x, dude1.speed.y)
-        # print(dude1.state)
-        count = 0
+            G_ALL_SPRITES.draw(screen)
+            pygame.display.flip()
 
-pygame.quit()
+        pygame.quit()
+
+
+if __name__ == "__main__":
+    App().run()
