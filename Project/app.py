@@ -34,6 +34,8 @@ PLAYERS[0].controls = Controls(k_up='w', k_down='s', k_left='a', k_right='d')
 PLAYERS[1].controls = Controls(k_up='i', k_down='k', k_left='j', k_right='l')
 bullet1 = Bullet(G_ALL_SPRITES, G_BULLETS)
 count = 0
+
+
 class App:
     def __init__(self):
         pygame.init()
@@ -51,22 +53,30 @@ class App:
                     keyReleased = event.dict['unicode']
                     for player in PLAYERS:
                         if keyReleased in player.controls.assignment:
-                            execute = f"stop{player.controls.assignment[keyReleased]}"
-                            player.__getattribute__(execute).__call__()
+                            side = player.controls.assignment[keyReleased]
+                            command = player.__getattribute__(f"stopMove{side}")
+                            command.__call__()
 
                 if event.type == pygame.KEYDOWN:
                     keyPressed = event.dict['unicode']
                     for player in PLAYERS:
                         if keyPressed in player.controls.assignment:
-                            execute = f"start{player.controls.assignment[keyPressed]}"
-                            player.__getattribute__(execute).__call__()
+                            side = player.controls.assignment[keyPressed]
+                            command = player.__getattribute__(f"startMove{side}")
+                            command.__call__()
 
                 if event.type == pygame.QUIT:
                     self.running = False
-
-            if collisionContainer := CollisionDetector.isCollided(PLAYERS[0], G_PLAYERS):
-                for collision in collisionContainer:
-                    PLAYERS[0].state[f"BLOCK_{collision.sideOfMainSprite}"] = True
+            for player in PLAYERS:
+                if player.number == 1:
+                    continue
+                player.free()
+                if collisionContainer := CollisionDetector.isCollided(PLAYERS[0], G_PLAYERS):
+                    for collision in collisionContainer:
+                        sides = collision.getBlockedSides()
+                        for side in sides:
+                            print(side)
+                            player.state[f"BLOCK_{side}"] = True
             G_ALL_SPRITES.update()
 
             screen.fill((255, 255, 255))

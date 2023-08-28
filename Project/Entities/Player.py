@@ -40,6 +40,11 @@ class Player(pygame.sprite.Sprite):
                       'BLOCK_DOWN': False,
                       'BLOCK_LEFT': False,
                       'BLOCK_RIGHT': False}
+    def free(self):
+        self.state['BLOCK_UP'] = False
+        self.state['BLOCK_DOWN'] = False
+        self.state['BLOCK_LEFT'] = False
+        self.state['BLOCK_RIGHT'] = False
 
     def startMoveUp(self):
         self.state['STARTING_AXIS_Y'] = True
