@@ -128,21 +128,6 @@ class Player(pygame.sprite.Sprite):
                 self.countWhileMoving += 1
         self.image = self.imageKit[self.countWhileMoving % len(self.imageKit)]
 
-    def checkForCollision(self):
-        if a := pygame.sprite.spritecollideany():
-            if a[0] and a[1] < 10:
-                self.state['BLOCK_UP'] = True
-            if a[0] and a[1] > 20:
-                self.state['BLOCK_DOWN'] = True
-            if a[0] < 10 and a[1]:
-                self.state['BLOCK_LEFT'] = True
-            if a[0] > 20 and a[1]:
-                self.state['BLOCK_RIGHT'] = True
-        else:
-            self.state['BLOCK_UP'] = False
-            self.state['BLOCK_DOWN'] = False
-            self.state['BLOCK_LEFT'] = False
-            self.state['BLOCK_RIGHT'] = False
 
     def modifySpeed(self):
         if self.state['STARTING_AXIS_X'] is True:

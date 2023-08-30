@@ -22,13 +22,6 @@ def initPlayers(number: int):
         PLAYERS.append(_)
 
 
-pygame.init()
-pygame.mixer.init()
-screen = pygame.display.set_mode(SCREEN_SIZE)
-pygame.display.set_caption("DudeGame")
-clock = pygame.time.Clock()
-running = True
-
 initPlayers(number=NUMBER_OF_PLAYERS)
 PLAYERS[0].controls = Controls(k_up='w', k_down='s', k_left='a', k_right='d')
 PLAYERS[1].controls = Controls(k_up='i', k_down='k', k_left='j', k_right='l')
@@ -67,21 +60,23 @@ class App:
 
                 if event.type == pygame.QUIT:
                     self.running = False
+                    
             for player in PLAYERS:
                 if player.number == 1:
                     continue
-                player.free()
-                if collisionContainer := CollisionDetector.isCollided(PLAYERS[0], G_PLAYERS):
+                if collisionContainer := CollisionDetector.isCollided(player, G_PLAYERS):
                     for collision in collisionContainer:
                         sides = collision.getBlockedSides()
+                        print(sides)
                         for side in sides:
-                            print(side)
                             player.state[f"BLOCK_{side}"] = True
+                else:
+                    player.free()
             G_ALL_SPRITES.update()
 
-            screen.fill((255, 255, 255))
+            self.screen.fill((255, 255, 255))
 
-            G_ALL_SPRITES.draw(screen)
+            G_ALL_SPRITES.draw(self.screen)
             pygame.display.flip()
 
         pygame.quit()
