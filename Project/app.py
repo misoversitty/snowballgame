@@ -62,16 +62,16 @@ class App:
                     self.running = False
                     
             for player in PLAYERS:
-                if player.number == 1:
-                    continue
-                if collisionContainer := CollisionDetector.isCollided(player, G_PLAYERS):
-                    for collision in collisionContainer:
-                        sides = collision.getBlockedSides()
-                        print(sides)
-                        for side in sides:
-                            player.state[f"BLOCK_{side}"] = True
+                blockedSides = set()
+                if collisionsWithPlayers := CollisionDetector.getCollisions(player, G_PLAYERS):
+                    for collision in collisionsWithPlayers:
+                        blockedSides |= collision.blockedSides
                 else:
                     player.free()
+                for side in blockedSides:
+                    player.state[f"BLOCK_{side}"] = True
+
+
             G_ALL_SPRITES.update()
 
             self.screen.fill((255, 255, 255))
