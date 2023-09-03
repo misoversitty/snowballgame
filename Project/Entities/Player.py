@@ -159,22 +159,16 @@ class Player(pygame.sprite.Sprite):
                 self.state["STARTING_AXIS_X"] = True if self.speed.dx else False
 
     def limitSpeed(self):
-        if self.state["BLOCK_UP"] and self.speed.y < 0:
-            self.speed.y = 0
-        if self.state["BLOCK_DOWN"] and self.speed.y > 0:
-            self.speed.y = 0
-        if self.state["BLOCK_LEFT"] and self.speed.x < 0:
-            self.speed.x = 0
-        if self.state["BLOCK_RIGHT"] and self.speed.x > 0:
-            self.speed.x = 0
         if abs(self.speed.x) > self.maxSpeed:
             self.speed.x = self.maxSpeed * self.speed.dx
         if abs(self.speed.y) > self.maxSpeed:
             self.speed.y = self.maxSpeed * self.speed.dy
 
     def modifyCoordinates(self):
-        self.rect.x += self.speed.x
-        self.rect.y += self.speed.y
+        if not self.state["BLOCK_UP"] and self.speed.dy < 0 or not self.state["BLOCK_DOWN"] and self.speed.dy > 0:
+            self.rect.y += self.speed.y
+        if not self.state["BLOCK_LEFT"] and self.speed.dx < 0 or not self.state["BLOCK_RIGHT"] and self.speed.dx > 0:
+            self.rect.x += self.speed.x
 
     def update(self):
         self.calculateFacing()
