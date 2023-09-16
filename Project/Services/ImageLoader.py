@@ -1,13 +1,12 @@
-import pathlib
+from Project.Dependencies import *
 import pygame
 
-GAME_DIRECTORY = pathlib.Path.cwd()
-RESOURCES_DIRECTORY = pathlib.Path(f"{GAME_DIRECTORY}/Resources")
+
 
 class ImageLoader:
     @staticmethod
     def LoadImage(file: str):
-        file = pathlib.Path(RESOURCES_DIRECTORY, file)
+        file = Path(RESOURCES_DIRECTORY, file)
         try:
             surface = pygame.image.load(file)
         except FileNotFoundError:
