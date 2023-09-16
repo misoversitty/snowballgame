@@ -1,30 +1,32 @@
 import pygame
-from Entities.Player import Player
+import pathlib
 from Entities.Bullet import Bullet
 from Services.Controls import Controls
 from Services.CollisionDetector import CollisionDetector
-from Services.Collision import Collision
+from Services.PlayerInitializer import PlayerInitializer
+from Services.SettingsLoader import SettingsLoader
 
+
+GAME_DIRECTORY = pathlib.Path.cwd()
 SCREEN_SIZE = [800, 600]
 FPS = 30
 
-NUMBER_OF_PLAYERS = 2
+NUMBER_OF_PLAYERS = 6
 
-PLAYERS = []
+PLAYERS = PlayerInitializer(count=NUMBER_OF_PLAYERS)
 G_ALL_SPRITES = pygame.sprite.Group()
 G_PLAYERS = pygame.sprite.Group()
 G_BULLETS = pygame.sprite.Group()
 
 
-def initPlayers(number: int):
-    for i in range(number):
-        _ = Player(G_ALL_SPRITES, G_PLAYERS, number=i)
-        PLAYERS.append(_)
+def setUp():
+    PLAYERS[0].controls = Controls(k_up='w', k_down='s', k_left='a', k_right='d')
+    PLAYERS[1].controls = Controls(k_up='i', k_down='k', k_left='j', k_right='l')
+    G_ALL_SPRITES.add(p for p in PLAYERS)
+    G_PLAYERS.add(p for p in PLAYERS)
 
 
-initPlayers(number=NUMBER_OF_PLAYERS)
-PLAYERS[0].controls = Controls(k_up='w', k_down='s', k_left='a', k_right='d')
-PLAYERS[1].controls = Controls(k_up='i', k_down='k', k_left='j', k_right='l')
+setUp()
 bullet1 = Bullet(G_ALL_SPRITES, G_BULLETS)
 count = 0
 
