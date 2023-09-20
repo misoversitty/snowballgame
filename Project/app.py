@@ -1,17 +1,17 @@
 import pygame
-import pathlib
 from Entities.Bullet import Bullet
-from Services.Controls import Controls
+from Project.Settings.Control import Control
 from Services.CollisionDetector import CollisionDetector
 from Services.PlayerInitializer import PlayerInitializer
-from Services.SettingsLoader import SettingsLoader
+from Project.Settings.Settings import Settings
 
 
-GAME_DIRECTORY = pathlib.Path.cwd()
+settings = Settings()
+
 SCREEN_SIZE = [800, 600]
 FPS = 30
 
-NUMBER_OF_PLAYERS = 6
+NUMBER_OF_PLAYERS = 2
 
 PLAYERS = PlayerInitializer(count=NUMBER_OF_PLAYERS)
 G_ALL_SPRITES = pygame.sprite.Group()
@@ -20,8 +20,8 @@ G_BULLETS = pygame.sprite.Group()
 
 
 def setUp():
-    PLAYERS[0].controls = Controls(k_up='w', k_down='s', k_left='a', k_right='d')
-    PLAYERS[1].controls = Controls(k_up='i', k_down='k', k_left='j', k_right='l')
+    PLAYERS[0].control = Control(k_up='w', k_down='s', k_left='a', k_right='d')
+    PLAYERS[1].control = Control(k_up='i', k_down='k', k_left='j', k_right='l')
     G_ALL_SPRITES.add(p for p in PLAYERS)
     G_PLAYERS.add(p for p in PLAYERS)
 
@@ -35,28 +35,28 @@ class App:
     def __init__(self):
         pygame.init()
         pygame.mixer.init()
-        self.screen = pygame.display.set_mode(SCREEN_SIZE)
+        self.screen = pygame.display.set_mode(settings.screenSettings.getScreenSettings())
         pygame.display.set_caption("DudeGame")
         self.clock = pygame.time.Clock()
         self.running = True
 
     def run(self):
         while self.running:
-            self.clock.tick(FPS)
+            self.clock.tick(settings.screenSettings.FPS)
             for event in pygame.event.get():
                 if event.type == pygame.KEYUP:
                     keyReleased = event.dict['unicode']
                     for player in PLAYERS:
-                        if keyReleased in player.controls.assignment:
-                            side = player.controls.assignment[keyReleased]
+                        if keyReleased in player.control.assignment:
+                            side = player.control.assignment[keyReleased]
                             command = player.__getattribute__(f"stopMove{side}")
                             command.__call__()
 
                 if event.type == pygame.KEYDOWN:
                     keyPressed = event.dict['unicode']
                     for player in PLAYERS:
-                        if keyPressed in player.controls.assignment:
-                            side = player.controls.assignment[keyPressed]
+                        if keyPressed in player.control.assignment:
+                            side = player.control.assignment[keyPressed]
                             command = player.__getattribute__(f"startMove{side}")
                             command.__call__()
 
@@ -70,8 +70,7 @@ class App:
                         blockedSides |= collision.blockedSides
                 else:
                     player.free()
-                for side in blockedSides:
-                    player.state[f"BLOCK_{side}"] = True
+                player.block(blockedSides)
 
 
             G_ALL_SPRITES.update()
