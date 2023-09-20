@@ -1,11 +1,12 @@
-from Project.Dependencies import *
+from Project.Globals import RESOURCES_DIRECTORY
+from pathlib import Path
 import pygame
 
 
 
 class ImageLoader:
     @staticmethod
-    def LoadImage(file: str):
+    def loadImage(file: str):
         file = Path(RESOURCES_DIRECTORY, file)
         try:
             surface = pygame.image.load(file)
@@ -15,7 +16,7 @@ class ImageLoader:
 
 
     @staticmethod
-    def RotateImage(img: pygame.image, degrees) -> pygame.image:
+    def rotateImage(img: pygame.image, degrees) -> pygame.image:
         try:
             res = pygame.transform.rotate(img, degrees)
         except pygame.error:
