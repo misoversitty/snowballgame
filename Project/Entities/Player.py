@@ -1,10 +1,9 @@
 from random import randint
-
 import pygame
-from Project.Services.Facing import Facing
+from Project.DataStructures.Facing import Facing
 from Project.Services.ImageContainer import ImageContainer
 from Project.Services.ImageLoader import ImageLoader
-from Project.Services.Speed import Speed
+from Project.DataStructures.Speed import Speed
 
 
 PLAYER_SPEED = 5
@@ -13,18 +12,18 @@ PLAYER_BLINK_PERIOD = 0.5
 
 
 class Player(pygame.sprite.Sprite):
-    imageContainer = ImageContainer(ImageLoader.LoadImage("p1.png"), ImageLoader.LoadImage("p12.png"))
+    imageContainer = ImageContainer(ImageLoader.loadImage("p1.png"), ImageLoader.loadImage("p12.png"))
 
     def __init__(self, *groups, number):
         super().__init__(*groups)
-        self.number = number
+        self.No = number
         self.animCycles = 0
         self.imageKit = self.imageContainer["up"]
         self.countWhileMoving = 0
         self.image = self.imageKit[self.countWhileMoving]
         self.rect = self.image.get_rect()
         self.rect.center = (randint(200, 600), randint(300, 500))
-        self.controls = None
+        self.control = None
         self.facing = Facing()
         self.speed = Speed(maxSpeed=PLAYER_SPEED)
         self.acceleration = PLAYER_INERTIA
@@ -45,6 +44,11 @@ class Player(pygame.sprite.Sprite):
         self.state["BLOCK_DOWN"] = False
         self.state["BLOCK_LEFT"] = False
         self.state["BLOCK_RIGHT"] = False
+
+    def block(self, sides):
+        for side in sides:
+            self.state[f"BLOCK_{side}"] = True
+
 
     def startMoveUp(self):
         self.state["STARTING_AXIS_Y"] = True
