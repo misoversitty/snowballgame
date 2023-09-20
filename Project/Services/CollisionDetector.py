@@ -10,7 +10,7 @@ class CollisionDetector:
         collisionList = pygame.sprite.spritecollide(player, group, dokill=False)
         if len(collisionList) > 1:
             filteredCollisionList = filter(lambda args:
-                                           CollisionDetector.filterCollisionList(args[0], ignorable=player.number),
+                                           CollisionDetector.filterCollisionList(args[0], ignorable=player.No),
                                            enumerate(collisionList))
             filteredCollisionList = map(lambda args:
                                         args[1],
