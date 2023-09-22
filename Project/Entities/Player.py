@@ -1,7 +1,7 @@
 from random import randint
 import pygame
 from Project.DataStructures.Facing import Facing
-from Project.Services.ImageContainer import ImageContainer
+from Project.DataStructures.ImageContainer import ImageContainer
 from Project.Services.ImageLoader import ImageLoader
 from Project.DataStructures.Speed import Speed
 
