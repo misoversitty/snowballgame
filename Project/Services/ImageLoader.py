@@ -3,7 +3,6 @@ from pathlib import Path
 import pygame
 
 
-
 class ImageLoader:
     @staticmethod
     def loadImage(file: str):
