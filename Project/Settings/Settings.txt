@@ -7,10 +7,12 @@ Player0_Up = w
 Player0_Down = s
 Player0_Left = a
 Player0_Right = d
+Player0_Shoot = e
 Player1_Up = i
 Player1_Down = k
 Player1_Left = j
 Player1_Right = l
+Player1_Shoot = o
 [CUSTOMISATION]
 Player0_Colour = Pink
 Player1_Colour = Blue
