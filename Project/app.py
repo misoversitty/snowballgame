@@ -1,15 +1,11 @@
 import pygame
 from Entities.Bullet import Bullet
-from Project.Settings.Control import Control
 from Services.CollisionDetector import CollisionDetector
 from Services.PlayerInitializer import PlayerInitializer
 from Project.Settings.Settings import Settings
 
 
 settings = Settings()
-
-SCREEN_SIZE = [800, 600]
-FPS = 30
 
 NUMBER_OF_PLAYERS = 2
 
@@ -20,14 +16,13 @@ G_BULLETS = pygame.sprite.Group()
 
 
 def setUp():
-    PLAYERS[0].control = Control(k_up='w', k_down='s', k_left='a', k_right='d')
-    PLAYERS[1].control = Control(k_up='i', k_down='k', k_left='j', k_right='l')
     G_ALL_SPRITES.add(p for p in PLAYERS)
     G_PLAYERS.add(p for p in PLAYERS)
+    for player in PLAYERS:
+        player.control = settings.controlSettings[player.No]
 
 
 setUp()
-bullet1 = Bullet(G_ALL_SPRITES, G_BULLETS)
 count = 0
 
 
@@ -36,7 +31,7 @@ class App:
         pygame.init()
         pygame.mixer.init()
         self.screen = pygame.display.set_mode(settings.screenSettings.getScreenSettings())
-        pygame.display.set_caption("DudeGame")
+        pygame.display.set_caption("Game")
         self.clock = pygame.time.Clock()
         self.running = True
 
@@ -48,17 +43,19 @@ class App:
                     keyReleased = event.dict['unicode']
                     for player in PLAYERS:
                         if keyReleased in player.control.assignment:
-                            side = player.control.assignment[keyReleased]
-                            command = player.__getattribute__(f"stopMove{side}")
-                            command.__call__()
+                            action = player.control.assignment[keyReleased]
+                            command = player.__getattribute__(action)
+                            command.__call__(pressed=False)
 
                 if event.type == pygame.KEYDOWN:
                     keyPressed = event.dict['unicode']
                     for player in PLAYERS:
                         if keyPressed in player.control.assignment:
-                            side = player.control.assignment[keyPressed]
-                            command = player.__getattribute__(f"startMove{side}")
-                            command.__call__()
+                            action = player.control.assignment[keyPressed]
+                            command = player.__getattribute__(action)
+                            thisIsBullet = command.__call__(pressed=True)
+                            if thisIsBullet:
+                                G_ALL_SPRITES.add(thisIsBullet)
 
                 if event.type == pygame.QUIT:
                     self.running = False
