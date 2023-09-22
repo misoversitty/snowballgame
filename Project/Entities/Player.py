@@ -1,8 +1,9 @@
 from random import randint
-import pygame
+from pygame.sprite import Sprite
+from Project.Entities.Bullet import Bullet
+from Project.Services.ImageLoader import ImageLoader
 from Project.DataStructures.Facing import Facing
 from Project.DataStructures.ImageContainer import ImageContainer
-from Project.Services.ImageLoader import ImageLoader
 from Project.DataStructures.Speed import Speed
 
 
@@ -11,7 +12,7 @@ PLAYER_INERTIA = [1, 1]
 PLAYER_BLINK_PERIOD = 0.5
 
 
-class Player(pygame.sprite.Sprite):
+class Player(Sprite):
     imageContainer = ImageContainer(ImageLoader.loadImage("p1.png"), ImageLoader.loadImage("p12.png"))
 
     def __init__(self, *groups, number):
@@ -39,6 +40,7 @@ class Player(pygame.sprite.Sprite):
                       "BLOCK_DOWN": False,
                       "BLOCK_LEFT": False,
                       "BLOCK_RIGHT": False}
+
     def free(self):
         self.state["BLOCK_UP"] = False
         self.state["BLOCK_DOWN"] = False
@@ -49,58 +51,96 @@ class Player(pygame.sprite.Sprite):
         for side in sides:
             self.state[f"BLOCK_{side}"] = True
 
+    def up(self, **kwargs):
+        def __startMoveUp():
+            self.state["STARTING_AXIS_Y"] = True
+            self.state["SLOWING_AXIS_Y"] = False
+            self.state["MOVING"] = True
+            self.speed.dy = -1
 
-    def startMoveUp(self):
-        self.state["STARTING_AXIS_Y"] = True
-        self.state["SLOWING_AXIS_Y"] = False
-        self.state["MOVING"] = True
-        self.speed.dy = -1
+        def __stopMoveUp():
+            if self.speed.dy <= 0:
+                self.state["STARTING_AXIS_Y"] = False
+                self.state["SLOWING_AXIS_Y"] = True
+                self.state["MOVING"] = True if self.speed.dx else False
+                self.speed.dy = 0
 
-    def startMoveDown(self):
-        self.state["STARTING_AXIS_Y"] = True
-        self.state["SLOWING_AXIS_Y"] = False
-        self.state["MOVING"] = True
-        self.speed.dy = 1
+        isPressed = kwargs.get("pressed")
+        if isPressed is True:
+            __startMoveUp()
+        else:
+            __stopMoveUp()
 
-    def startMoveLeft(self):
-        self.state["STARTING_AXIS_X"] = True
-        self.state["SLOWING_AXIS_X"] = False
-        self.state["MOVING"] = True
-        self.speed.dx = -1
+    def down(self, **kwargs):
+        def __startMoveDown():
+            self.state["STARTING_AXIS_Y"] = True
+            self.state["SLOWING_AXIS_Y"] = False
+            self.state["MOVING"] = True
+            self.speed.dy = 1
 
-    def startMoveRight(self):
-        self.state["STARTING_AXIS_X"] = True
-        self.state["SLOWING_AXIS_X"] = False
-        self.state["MOVING"] = True
-        self.speed.dx = 1
+        def __stopMoveDown():
+            if self.speed.dy >= 0:
+                self.state["STARTING_AXIS_Y"] = False
+                self.state["SLOWING_AXIS_Y"] = True
+                self.state["MOVING"] = True if self.speed.dx else False
+                self.speed.dy = 0
 
-    def stopMoveUp(self):
-        if self.speed.dy <= 0:
-            self.state["STARTING_AXIS_Y"] = False
-            self.state["SLOWING_AXIS_Y"] = True
-            self.state["MOVING"] = True if self.speed.dx else False
-            self.speed.dy = 0
+        isPressed = kwargs.get("pressed")
+        if isPressed is True:
+            __startMoveDown()
+        else:
+            __stopMoveDown()
 
-    def stopMoveDown(self):
-        if self.speed.dy >= 0:
-            self.state["STARTING_AXIS_Y"] = False
-            self.state["SLOWING_AXIS_Y"] = True
-            self.state["MOVING"] = True if self.speed.dx else False
-            self.speed.dy = 0
+    def left(self, **kwargs):
+        def __startMoveLeft():
+            self.state["STARTING_AXIS_X"] = True
+            self.state["SLOWING_AXIS_X"] = False
+            self.state["MOVING"] = True
+            self.speed.dx = -1
 
-    def stopMoveLeft(self):
-        if self.speed.dx <= 0:
-            self.state["STARTING_AXIS_X"] = False
-            self.state["SLOWING_AXIS_X"] = True
-            self.state["MOVING"] = True if self.speed.dy else False
-            self.speed.dx = 0
+        def __stopMoveLeft():
+            if self.speed.dx <= 0:
+                self.state["STARTING_AXIS_X"] = False
+                self.state["SLOWING_AXIS_X"] = True
+                self.state["MOVING"] = True if self.speed.dy else False
+                self.speed.dx = 0
 
-    def stopMoveRight(self):
-        if self.speed.dx >= 0:
-            self.state["STARTING_AXIS_X"] = False
-            self.state["SLOWING_AXIS_X"] = True
-            self.state["MOVING"] = True if self.speed.dy else False
-            self.speed.dx = 0
+        isPressed = kwargs.get("pressed")
+        if isPressed is True:
+            __startMoveLeft()
+        else:
+            __stopMoveLeft()
+
+    def right(self, **kwargs):
+        def __startMoveRight():
+            self.state["STARTING_AXIS_X"] = True
+            self.state["SLOWING_AXIS_X"] = False
+            self.state["MOVING"] = True
+            self.speed.dx = 1
+
+        def __stopMoveRight():
+            if self.speed.dx >= 0:
+                self.state["STARTING_AXIS_X"] = False
+                self.state["SLOWING_AXIS_X"] = True
+                self.state["MOVING"] = True if self.speed.dy else False
+                self.speed.dx = 0
+
+        isPressed = kwargs.get("pressed")
+        if isPressed is True:
+            __startMoveRight()
+        else:
+            __stopMoveRight()
+
+    def shoot(self, **kwargs):
+        def __shoot():
+            self.state["SHOOTING"] = True
+            print(f"Player #{self.No} did pew-thing")
+            b = Bullet(facing=self.facing)
+            b.rect.center = self.rect.center
+            return b
+        isPressed = kwargs.get("pressed")
+        if isPressed is True:
+            return __shoot()
 
     def calculateFacing(self):
         if self.speed.dx != 0 or self.speed.dy != 0:
@@ -109,19 +149,19 @@ class Player(pygame.sprite.Sprite):
     def pickImageKitAccordingToFacing(self):
         if (self.facing.x, self.facing.y) == (0, -1):
             self.imageKit = self.imageContainer["up"]
-        if (self.facing.x, self.facing.y) == (0, 1):
+        elif (self.facing.x, self.facing.y) == (0, 1):
             self.imageKit = self.imageContainer["down"]
-        if (self.facing.x, self.facing.y) == (-1, 0):
+        elif (self.facing.x, self.facing.y) == (-1, 0):
             self.imageKit = self.imageContainer["left"]
-        if (self.facing.x, self.facing.y) == (1, 0):
+        elif (self.facing.x, self.facing.y) == (1, 0):
             self.imageKit = self.imageContainer["right"]
-        if (self.facing.x, self.facing.y) == (-1, -1):
+        elif (self.facing.x, self.facing.y) == (-1, -1):
             self.imageKit = self.imageContainer["up-left"]
-        if (self.facing.x, self.facing.y) == (1, -1):
+        elif (self.facing.x, self.facing.y) == (1, -1):
             self.imageKit = self.imageContainer["up-right"]
-        if (self.facing.x, self.facing.y) == (-1, 1):
+        elif (self.facing.x, self.facing.y) == (-1, 1):
             self.imageKit = self.imageContainer["down-left"]
-        if (self.facing.x, self.facing.y) == (1, 1):
+        elif (self.facing.x, self.facing.y) == (1, 1):
             self.imageKit = self.imageContainer["down-right"]
 
     def pickImage(self):
@@ -131,7 +171,6 @@ class Player(pygame.sprite.Sprite):
                 self.animCycles = 0
                 self.countWhileMoving += 1
         self.image = self.imageKit[self.countWhileMoving % len(self.imageKit)]
-
 
     def modifySpeed(self):
         if self.state["STARTING_AXIS_X"] is True:
