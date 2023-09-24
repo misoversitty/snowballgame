@@ -1,42 +1,20 @@
-from pygame.sprite import Sprite
+from Project.Entities.BaseEntity import BaseEntity
 from Project.Services.ImageLoader import ImageLoader
-from Project.DataStructures.ImageContainer import ImageContainer
-from Project.DataStructures.Speed import Speed
-from Project.DataStructures.Facing import Facing
 
 
 BULLET_SPEED = 5
+baseImages = (ImageLoader.loadImage('bullet.png'),)
 
-class Bullet(Sprite):
-    def __init__(self, *groups, **kwargs):
-        super().__init__(*groups)
-        self.imageContainer = ImageContainer(ImageLoader.loadImage('bullet.png'))
-        #self.imageKit = None
+
+class Bullet(BaseEntity):
+    def __init__(self, **kwargs):
+        super().__init__(maxSpeed=BULLET_SPEED, acceleration=[BULLET_SPEED, 0], baseImages=baseImages)
         self.facing = kwargs.get("facing")
-        self.pickImageKitAccordingToFacing()
-        self.image = self.imageKit[0]
-        self.rect = self.image.get_rect()
-        self.rect.center = (400, 300)
+        self.speed.dx, self.speed.dy = self.facing.x, self.facing.y
+        self.state["MOVING"] = True
+        self.state["STARTING_AXIS_X"] = True
+        self.state["STARTING_AXIS_Y"] = True
 
-        self.speed = Speed(maxSpeed=BULLET_SPEED)
-
-    def pickImageKitAccordingToFacing(self):
-        if (self.facing.x, self.facing.y) == (0, -1):
-            self.imageKit = self.imageContainer["up"]
-        elif (self.facing.x, self.facing.y) == (0, 1):
-            self.imageKit = self.imageContainer["down"]
-        elif (self.facing.x, self.facing.y) == (-1, 0):
-            self.imageKit = self.imageContainer["left"]
-        elif (self.facing.x, self.facing.y) == (1, 0):
-            self.imageKit = self.imageContainer["right"]
-        elif (self.facing.x, self.facing.y) == (-1, -1):
-            self.imageKit = self.imageContainer["up-left"]
-        elif (self.facing.x, self.facing.y) == (1, -1):
-            self.imageKit = self.imageContainer["up-right"]
-        elif (self.facing.x, self.facing.y) == (-1, 1):
-            self.imageKit = self.imageContainer["down-left"]
-        elif (self.facing.x, self.facing.y) == (1, 1):
-            self.imageKit = self.imageContainer["down-right"]
 
     def update(self):
-        pass
+        super().update()
