@@ -49,6 +49,8 @@ class App:
 
                 if event.type == pygame.KEYDOWN:
                     keyPressed = event.dict['unicode']
+                    if keyPressed == 'g':
+                        print("Entering Debugggg")
                     for player in PLAYERS:
                         if keyPressed in player.control.assignment:
                             action = player.control.assignment[keyPressed]
@@ -56,6 +58,7 @@ class App:
                             thisIsBullet = command.__call__(pressed=True)
                             if thisIsBullet:
                                 G_ALL_SPRITES.add(thisIsBullet)
+                                G_BULLETS.add(thisIsBullet)
 
                 if event.type == pygame.QUIT:
                     self.running = False
@@ -71,7 +74,6 @@ class App:
 
 
             G_ALL_SPRITES.update()
-
             self.screen.fill((255, 255, 255))
 
             G_ALL_SPRITES.draw(self.screen)
