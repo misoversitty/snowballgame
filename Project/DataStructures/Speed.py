@@ -7,4 +7,4 @@ class Speed:
         self.dy = 0
         self.x = 0
         self.y = 0
-        self.module = {'ortho': maxSpeed, 'side': int(maxSpeed // sqrt(2))}
+        self.max = {"ortho": maxSpeed, "side": int(maxSpeed // sqrt(2))}
