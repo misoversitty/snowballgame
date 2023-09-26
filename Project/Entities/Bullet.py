@@ -8,13 +8,19 @@ baseImages = (ImageLoader.loadImage('bullet.png'),)
 
 class Bullet(BaseEntity):
     def __init__(self, **kwargs):
-        super().__init__(maxSpeed=BULLET_SPEED, acceleration=[BULLET_SPEED, 0], baseImages=baseImages)
+        super().__init__(maxSpeed=BULLET_SPEED, acceleration=[0.01, 0], baseImages=baseImages)
         self.facing = kwargs.get("facing")
-        self.speed.dx, self.speed.dy = self.facing.x, self.facing.y
-        self.state["MOVING"] = True
-        self.state["STARTING_AXIS_X"] = True
-        self.state["STARTING_AXIS_Y"] = True
+        self.start()
 
+    def start(self):
+        if self.facing.x == -1:
+            self.startMoveLeft()
+        elif self.facing.x == 1:
+            self.startMoveRight()
+        if self.facing.y == -1:
+            self.startMoveUp()
+        elif self.facing.y == 1:
+            self.startMoveDown()
 
     def update(self):
         super().update()
