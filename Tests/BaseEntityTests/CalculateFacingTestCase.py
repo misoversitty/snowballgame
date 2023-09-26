@@ -14,12 +14,14 @@ class CalculateFacingTestCase(unittest.TestCase):
 
     def test_calculateFacing_lookingDown(self):
         self.entity.startMoveDown()
+        self.entity.coordinate.update()
         self.entity.calculateFacing()
         self.assertEqual(self.entity.facing.x, 0)
         self.assertEqual(self.entity.facing.y, 1)
 
     def test_calculateFacing_lookingLeft(self):
         self.entity.startMoveLeft()
+        self.entity.coordinate.update()
         self.entity.calculateFacing()
         self.assertEqual(self.entity.facing.x, -1)
         self.assertEqual(self.entity.facing.y, 0)
