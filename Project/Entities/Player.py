@@ -1,5 +1,4 @@
 from random import randint
-from copy import copy
 from Project.Entities.Bullet import Bullet
 from Project.Entities.BaseEntity import BaseEntity
 from Project.Services.ImageLoader import ImageLoader
@@ -19,8 +18,8 @@ class Player(BaseEntity):
         self.rect.center = (randint(200, 600), randint(300, 500))
         self.control = None
         self.state |= {"PREPARING": False,
-                      "SHOOTING": False,
-                      "RELOADING": False}
+                       "SHOOTING": False,
+                       "RELOADING": False}
 
     def free(self):
         self.state["BLOCK_UP"] = False
@@ -65,7 +64,7 @@ class Player(BaseEntity):
         if isPressed is True:
             self.state["SHOOTING"] = True
             print(f"Player #{self.No} did pew-thing")
-            b = Bullet(facing=copy(self.facing))
+            b = Bullet(facing=self.facing.copy())
             b.rect.center = self.rect.center
             return b
 
