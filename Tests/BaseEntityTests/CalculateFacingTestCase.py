@@ -2,7 +2,7 @@ import unittest
 from Project.Entities.BaseEntity import BaseEntity
 
 
-class BaseEntityTestCase(unittest.TestCase):
+class CalculateFacingTestCase(unittest.TestCase):
     def setUp(self):
         self.entity = BaseEntity(maxSpeed=5, acceleration=[1, 1])
 
