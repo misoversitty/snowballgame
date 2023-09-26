@@ -8,6 +8,7 @@ class CoordinateTestCase(unittest.TestCase):
         self.obj = Coordinate()
         self.obj.x, self.obj.y = 0, 0
         self.obj.dx, self.obj.dy = 5, 5
+        self.obj.target_dx, self.obj.target_dy = 100, 100
         self.obj.d2x, self.obj.d2y = 5, 5
 
     def test_modifyCoordinate(self):
@@ -21,6 +22,13 @@ class CoordinateTestCase(unittest.TestCase):
         for elem in rightAnswers:
             self.assertEqual(self.obj.dx, elem)
             self.obj.modifySpeed()
+
+    def test_limitSpeed(self):
+        self.obj.dx, self.obj.dy = self.obj.target_dx, self.obj.target_dy
+        self.obj.modifySpeed()
+        self.obj.limitSpeed()
+        self.assertEqual(self.obj.dx, self.obj.target_dx)
+        self.assertEqual(self.obj.dy, self.obj.target_dy)
 
     def test_update(self):
         rightAnswers = np.array([0, 5, 15, 30, 50, 75], dtype=int)

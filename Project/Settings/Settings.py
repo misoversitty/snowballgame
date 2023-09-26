@@ -6,9 +6,10 @@ from Project.Services.Singleton import Singleton
 
 
 class Settings(metaclass=Singleton):
-    settingsLinesFromFile = SettingsLoader.importFile()
-    parser = SettingsParser(settingsLinesFromFile)
-    screenSettingsLines = parser.getScreenSettingsLines()
-    screenSettings = ScreenSettings(screenSettingsLines)
-    controlSettingsLines = parser.getControlSettingsLines()
-    controlSettings = ControlSettings(controlSettingsLines)
+    def __init__(self):
+        settingsLinesFromFile = SettingsLoader.importFile()
+        parser = SettingsParser(settingsLinesFromFile)
+        screenSettingsLines = parser.getScreenSettingsLines()
+        self.screenSettings = ScreenSettings(screenSettingsLines)
+        controlSettingsLines = parser.getControlSettingsLines()
+        self.controlSettings = ControlSettings(controlSettingsLines)

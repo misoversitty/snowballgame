@@ -1,5 +1,6 @@
 from Project.Services.Singleton import Singleton
 
+
 class SettingsParser(metaclass=Singleton):
     def __init__(self, lines: list[str, ...]):
         self.rawLines = lines
