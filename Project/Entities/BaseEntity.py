@@ -1,7 +1,7 @@
 import pygame
 from pygame.sprite import Sprite
-from Project.DataStructures.Speed import Speed
-from Project.DataStructures.Acceleration import Acceleration
+from Project.DataStructures.Coordinate import Coordinate
+from math import sqrt
 from Project.DataStructures.Facing import Facing
 from Project.DataStructures.ImageContainer import ImageContainer
 
@@ -16,8 +16,6 @@ class BaseEntity(Sprite):
         super().__init__()
         self.imageContainer = ImageContainer(*kwargs.get("baseImages", baseImages))
         self.facing = Facing()
-        self.speed = Speed(kwargs.get("maxSpeed"))
-        self.acceleration = Acceleration(*kwargs.get("acceleration"))
         self.animCycles = 0
         self.imageKit = None
         self.pickImageKitAccordingToFacing()
@@ -25,149 +23,123 @@ class BaseEntity(Sprite):
         self.image = self.imageKit[self.countWhileMoving]
         self.rect = self.image.get_rect()
         self.state = {"MOVING": False,
-                      "STARTING_AXIS_X": False,
-                      "STARTING_AXIS_Y": False,
-                      "SLOWING_AXIS_X": False,
-                      "SLOWING_AXIS_Y": False,
                       "BLOCK_UP": False,
                       "BLOCK_DOWN": False,
                       "BLOCK_LEFT": False,
                       "BLOCK_RIGHT": False}
 
+        self.coordinate = Coordinate()
+        self.coordinate.x, self.coordinate.y = self.rect.centerx, self.rect.centery
+        self.coordinate.dx, self.coordinate.dy = 0, 0
+        self.coordinate.target_dx, self.coordinate.target_dy = 0, 0
+        self.coordinate.d2x, self.coordinate.d2y = 0, 0
+
+        self.maxSpeed = {"orthogonal": kwargs.get("maxSpeed"),
+                         "side": kwargs.get("maxSpeed") // sqrt(2)}
+        self.maxAcceleration = {"STARTING": kwargs.get("acceleration")[0],
+                                "STOPPING": kwargs.get("acceleration")[-1]}
+
     def startMoveUp(self):
-        self.state["STARTING_AXIS_Y"] = True
-        self.state["SLOWING_AXIS_Y"] = False
-        self.state["MOVING"] = True
-        self.speed.dy = -1
+        self.coordinate.target_dy = -self.maxSpeed["orthogonal"]
+        self.coordinate.d2y = -self.maxAcceleration["STARTING"]
+        if self.coordinate.target_dx > 0:
+            self.coordinate.target_dx = 0
+            self.coordinate.d2x = -self.maxSpeed["orthogonal"]
+        if self.coordinate.target_dx < 0:
+            self.coordinate.target_dx = 0
+            self.coordinate.d2x = self.maxSpeed["orthogonal"]
 
     def stopMoveUp(self):
-        if self.speed.dy <= 0:
-            self.state["STARTING_AXIS_Y"] = False
-            self.state["SLOWING_AXIS_Y"] = True
-            self.state["MOVING"] = True if self.speed.dx else False
-            self.speed.dy = 0
+        if self.coordinate.dy < 0:
+            self.coordinate.target_dy = 0
+            self.coordinate.d2y = self.maxAcceleration["STOPPING"]
 
     def startMoveDown(self):
-        self.state["STARTING_AXIS_Y"] = True
-        self.state["SLOWING_AXIS_Y"] = False
-        self.state["MOVING"] = True
-        self.speed.dy = 1
+        self.coordinate.target_dy = self.maxSpeed["orthogonal"]
+        self.coordinate.d2y = self.maxAcceleration["STARTING"]
+        if self.coordinate.target_dx > 0:
+            self.coordinate.target_dx = 0
+            self.coordinate.d2x = -self.maxSpeed["orthogonal"]
+        elif self.coordinate.target_dx < 0:
+            self.coordinate.target_dx = 0
+            self.coordinate.d2x = self.maxSpeed["orthogonal"]
 
     def stopMoveDown(self):
-        if self.speed.dy >= 0:
-            self.state["STARTING_AXIS_Y"] = False
-            self.state["SLOWING_AXIS_Y"] = True
-            self.state["MOVING"] = True if self.speed.dx else False
-            self.speed.dy = 0
+        if self.coordinate.dy > 0:
+            self.coordinate.target_dy = 0
+            self.coordinate.d2y = -self.maxAcceleration["STOPPING"]
 
     def startMoveLeft(self):
-        self.state["STARTING_AXIS_X"] = True
-        self.state["SLOWING_AXIS_X"] = False
-        self.state["MOVING"] = True
-        self.speed.dx = -1
+        self.coordinate.target_dx = -self.maxSpeed["orthogonal"]
+        self.coordinate.d2x = -self.maxAcceleration["STARTING"]
+        if self.coordinate.target_dy > 0:
+            self.coordinate.target_dy = 0
+            self.coordinate.d2y = -self.maxSpeed["orthogonal"]
+        elif self.coordinate.target_dy < 0:
+            self.coordinate.target_dy = 0
+            self.coordinate.d2y = self.maxSpeed["orthogonal"]
 
     def stopMoveLeft(self):
-        if self.speed.dx <= 0:
-            self.state["STARTING_AXIS_X"] = False
-            self.state["SLOWING_AXIS_X"] = True
-            self.state["MOVING"] = True if self.speed.dy else False
-            self.speed.dx = 0
+        if self.coordinate.dx < 0:
+            self.coordinate.target_dx = 0
+            self.coordinate.d2x = self.maxAcceleration["STOPPING"]
 
     def startMoveRight(self):
-        self.state["STARTING_AXIS_X"] = True
-        self.state["SLOWING_AXIS_X"] = False
-        self.state["MOVING"] = True
-        self.speed.dx = 1
+        self.coordinate.target_dx = self.maxSpeed["orthogonal"]
+        self.coordinate.d2x = self.maxAcceleration["STARTING"]
+        if self.coordinate.target_dy > 0:
+            self.coordinate.target_dy = 0
+            self.coordinate.d2y = -self.maxSpeed["orthogonal"]
+        elif self.coordinate.target_dy < 0:
+            self.coordinate.target_dy = 0
+            self.coordinate.d2y = self.maxSpeed["orthogonal"]
 
     def stopMoveRight(self):
-        if self.speed.dx >= 0:
-            self.state["STARTING_AXIS_X"] = False
-            self.state["SLOWING_AXIS_X"] = True
-            self.state["MOVING"] = True if self.speed.dy else False
-            self.speed.dx = 0
+        if self.coordinate.dx > 0:
+            self.coordinate.target_dx = 0
+            self.coordinate.d2x = self.maxAcceleration["STOPPING"]
 
     def calculateFacing(self):
-        if self.speed.dx != 0 or self.speed.dy != 0:
-            self.facing.x, self.facing.y = self.speed.dx, self.speed.dy
+        if self.coordinate.dx != 0 or self.coordinate.dy != 0:
+            try:
+                self.facing.x = self.coordinate.dx // abs(self.coordinate.dx)
+            except ZeroDivisionError:
+                self.facing.x = 0
+            try:
+                self.facing.y = self.coordinate.dy // abs(self.coordinate.dy)
+            except ZeroDivisionError:
+                self.facing.y = 0
 
     def pickImageKitAccordingToFacing(self):
-        if (self.facing.x, self.facing.y) == (0, -1):
+        if self.facing() == (0, -1):
             self.imageKit = self.imageContainer["up"]
-        elif (self.facing.x, self.facing.y) == (0, 1):
+        elif self.facing() == (0, 1):
             self.imageKit = self.imageContainer["down"]
-        elif (self.facing.x, self.facing.y) == (-1, 0):
+        elif self.facing() == (-1, 0):
             self.imageKit = self.imageContainer["left"]
-        elif (self.facing.x, self.facing.y) == (1, 0):
+        elif self.facing() == (1, 0):
             self.imageKit = self.imageContainer["right"]
-        elif (self.facing.x, self.facing.y) == (-1, -1):
+        elif self.facing() == (-1, -1):
             self.imageKit = self.imageContainer["up-left"]
-        elif (self.facing.x, self.facing.y) == (1, -1):
+        elif self.facing() == (1, -1):
             self.imageKit = self.imageContainer["up-right"]
-        elif (self.facing.x, self.facing.y) == (-1, 1):
+        elif self.facing() == (-1, 1):
             self.imageKit = self.imageContainer["down-left"]
-        elif (self.facing.x, self.facing.y) == (1, 1):
+        elif self.facing() == (1, 1):
             self.imageKit = self.imageContainer["down-right"]
 
     def changeImage(self):
-        if self.state["MOVING"]:
+        if self.coordinate.dx + self.coordinate.dy != 0:
             self.animCycles += 1
             if self.animCycles >= 30:
                 self.animCycles = 0
                 self.countWhileMoving += 1
         self.image = self.imageKit[self.countWhileMoving % len(self.imageKit)]
 
-    def modifySpeed(self):
-        if self.state["STARTING_AXIS_X"] is True:
-            self.speed.x += self.speed.dx * self.acceleration.x["STARTING"]
-
-        if self.state["STARTING_AXIS_Y"] is True:
-            self.speed.y += self.speed.dy * self.acceleration.y["STARTING"]
-
-        if self.state["SLOWING_AXIS_X"] is True:
-            if self.speed.x > 0:
-                self.speed.x += -self.acceleration.x["SLOWING"]
-            elif self.speed.x < 0:
-                self.speed.x += self.acceleration.x["SLOWING"]
-            else:
-                self.state["SLOWING_AXIS_X"] = False
-
-        if self.state["SLOWING_AXIS_Y"] is True:
-            if self.speed.y > 0:
-                self.speed.y += -self.acceleration.y["SLOWING"]
-            elif self.speed.y < 0:
-                self.speed.y += self.acceleration.y["SLOWING"]
-            else:
-                self.state["SLOWING_AXIS_Y"] = False
-
-    def limitSpeed(self):
-        maxSpeed = self.getMaxSpeed()
-        if abs(self.speed.x) > maxSpeed:
-            self.speed.x = maxSpeed * self.speed.dx
-            self.state["STARTING_AXIS_X"] = False
-        else:
-            self.state["STARTING_AXIS_X"] = True
-        if abs(self.speed.y) > maxSpeed:
-            self.speed.y = maxSpeed * self.speed.dy
-            self.state["STARTING_AXIS_Y"] = False
-        else:
-            self.state["STARTING_AXIS_Y"] = True
-
-    def getMaxSpeed(self):
-        if self.speed.dx * self.speed.dy == 0:
-            return self.speed.max["ortho"]
-        else:
-            return self.speed.max["side"]
-
-    def modifyCoordinates(self):
-        if not self.state["BLOCK_UP"] and self.speed.dy < 0 or not self.state["BLOCK_DOWN"] and self.speed.dy > 0:
-            self.rect.y += self.speed.y
-        if not self.state["BLOCK_LEFT"] and self.speed.dx < 0 or not self.state["BLOCK_RIGHT"] and self.speed.dx > 0:
-            self.rect.x += self.speed.x
 
     def update(self):
         self.calculateFacing()
         self.pickImageKitAccordingToFacing()
         self.changeImage()
-        self.modifySpeed()
-        self.limitSpeed()
-        self.modifyCoordinates()
+        self.coordinate.update()
+        self.rect.x, self.rect.y = self.coordinate.x, self.coordinate.y
