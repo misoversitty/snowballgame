@@ -7,7 +7,10 @@ class Bullet(BaseEntity):
     BASE_IMAGES = (ImageLoader.loadImage('bullet.png'),)
 
     def __init__(self, **kwargs):
-        super().__init__(maxSpeed=self.BULLET_SPEED, acceleration=[0.01, 0], baseImages=self.BASE_IMAGES)
+        super().__init__(maxSpeed=self.BULLET_SPEED,
+                         acceleration=[0.01, 0],
+                         baseImages=self.BASE_IMAGES,
+                         coordinates=kwargs.get("coordinates"))
         self.facing = kwargs.get("facing")
         self.start()
 

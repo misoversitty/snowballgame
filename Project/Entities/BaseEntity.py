@@ -29,7 +29,7 @@ class BaseEntity(Sprite):
                       "BLOCK_RIGHT": False}
 
         self.coordinate = Coordinate()
-        self.coordinate.x, self.coordinate.y = self.rect.centerx, self.rect.centery
+        self.coordinate.x, self.coordinate.y = kwargs.get("coordinates", (0, 0))
         self.coordinate.dx, self.coordinate.dy = 0, 0
         self.coordinate.target_dx, self.coordinate.target_dy = 0, 0
         self.coordinate.d2x, self.coordinate.d2y = 0, 0
@@ -142,4 +142,4 @@ class BaseEntity(Sprite):
         self.pickImageKitAccordingToFacing()
         self.changeImage()
         self.coordinate.update()
-        self.rect.x, self.rect.y = self.coordinate.x, self.coordinate.y
+        self.rect.center = self.coordinate.x, self.coordinate.y

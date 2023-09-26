@@ -11,9 +11,11 @@ class Player(BaseEntity):
     BASE_IMAGES = (ImageLoader.loadImage("p1.png"), ImageLoader.loadImage("p12.png"))
 
     def __init__(self, **kwargs):
-        super().__init__(maxSpeed=self.PLAYER_SPEED, acceleration=self.PLAYER_INERTIA, baseImages=self.BASE_IMAGES)
+        super().__init__(maxSpeed=self.PLAYER_SPEED,
+                         acceleration=self.PLAYER_INERTIA,
+                         baseImages=self.BASE_IMAGES,
+                         coordinates=(randint(200, 600), randint(300, 500)))
         self.No = kwargs.get("number")
-        self.rect.center = (randint(200, 600), randint(300, 500))
         self.control = None
         self.state |= {"PREPARING": False,
                        "SHOOTING": False,
@@ -62,8 +64,9 @@ class Player(BaseEntity):
         if isPressed is True:
             self.state["SHOOTING"] = True
             print(f"Player #{self.No} did pew-thing")
-            b = Bullet(facing=self.facing.copy())
-            b.rect.center = self.rect.center
+            b = Bullet(facing=self.facing.copy(),
+                       coordinates=(self.coordinate.x, self.coordinate.y))
+            b.rect.center = (500, 600)
             return b
 
     def update(self):
