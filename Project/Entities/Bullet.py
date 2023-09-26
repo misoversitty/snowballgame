@@ -2,13 +2,12 @@ from Project.Entities.BaseEntity import BaseEntity
 from Project.Services.ImageLoader import ImageLoader
 
 
-BULLET_SPEED = 5
-baseImages = (ImageLoader.loadImage('bullet.png'),)
-
-
 class Bullet(BaseEntity):
+    BULLET_SPEED = 5
+    BASE_IMAGES = (ImageLoader.loadImage('bullet.png'),)
+
     def __init__(self, **kwargs):
-        super().__init__(maxSpeed=BULLET_SPEED, acceleration=[0.01, 0], baseImages=baseImages)
+        super().__init__(maxSpeed=self.BULLET_SPEED, acceleration=[0.01, 0], baseImages=self.BASE_IMAGES)
         self.facing = kwargs.get("facing")
         self.start()
 

@@ -4,16 +4,14 @@ from Project.Entities.BaseEntity import BaseEntity
 from Project.Services.ImageLoader import ImageLoader
 
 
-PLAYER_SPEED = 5
-PLAYER_INERTIA = [1, 1]
-PLAYER_BLINK_PERIOD = 0.5
-baseImages = (ImageLoader.loadImage("p1.png"), ImageLoader.loadImage("p12.png"))
-
-
 class Player(BaseEntity):
+    PLAYER_SPEED = 5
+    PLAYER_INERTIA = [1, 1]
+    PLAYER_BLINK_PERIOD = 0.5
+    BASE_IMAGES = (ImageLoader.loadImage("p1.png"), ImageLoader.loadImage("p12.png"))
 
     def __init__(self, **kwargs):
-        super().__init__(maxSpeed=PLAYER_SPEED, acceleration=PLAYER_INERTIA, baseImages=baseImages)
+        super().__init__(maxSpeed=self.PLAYER_SPEED, acceleration=self.PLAYER_INERTIA, baseImages=self.BASE_IMAGES)
         self.No = kwargs.get("number")
         self.rect.center = (randint(200, 600), randint(300, 500))
         self.control = None
