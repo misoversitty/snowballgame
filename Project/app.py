@@ -1,13 +1,12 @@
 import pygame
-from Entities.Bullet import Bullet
-from Services.CollisionDetector import CollisionDetector
-from Services.PlayerInitializer import PlayerInitializer
+from Project.Services.CollisionDetector import CollisionDetector
+from Project.Services.PlayerInitializer import PlayerInitializer
 from Project.Settings.Settings import Settings
+from Project.Globals import NUMBER_OF_PLAYERS
 
 
 settings = Settings()
 
-NUMBER_OF_PLAYERS = 2
 
 PLAYERS = PlayerInitializer(count=NUMBER_OF_PLAYERS)
 G_ALL_SPRITES = pygame.sprite.Group()
@@ -21,8 +20,6 @@ def setUp():
     for player in PLAYERS:
         player.control = settings.controlSettings[player.No]
 
-
-setUp()
 count = 0
 
 
@@ -36,6 +33,7 @@ class App:
         self.running = True
 
     def run(self):
+        setUp()
         while self.running:
             self.clock.tick(settings.screenSettings.FPS)
             for event in pygame.event.get():
