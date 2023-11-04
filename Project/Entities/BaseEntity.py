@@ -1,4 +1,4 @@
-import pygame
+from pygame import Surface
 from pygame.sprite import Sprite
 from Project.DataStructures.Coordinate import Coordinate
 from math import sqrt
@@ -6,7 +6,7 @@ from Project.DataStructures.Facing import Facing
 from Project.DataStructures.ImageContainer import ImageContainer
 
 
-baseImages = pygame.Surface([30, 30])
+baseImages = Surface([30, 30])
 baseImages.fill([160, 160, 160])
 baseImages = (baseImages,)
 
@@ -22,6 +22,8 @@ class BaseEntity(Sprite):
         self.countWhileMoving = 0
         self.image = self.imageKit[self.countWhileMoving]
         self.rect = self.image.get_rect()
+        self.rect.center = kwargs.get("coordinates")
+        self.blinkPeriod = 1
         self.state = {"MOVING": False,
                       "BLOCK_UP": False,
                       "BLOCK_DOWN": False,
@@ -29,7 +31,7 @@ class BaseEntity(Sprite):
                       "BLOCK_RIGHT": False}
 
         self.coordinate = Coordinate()
-        self.coordinate.x, self.coordinate.y = kwargs.get("coordinates", (0, 0))
+        self.coordinate.x, self.coordinate.y = self.rect.center
         self.coordinate.dx, self.coordinate.dy = 0, 0
         self.coordinate.target_dx, self.coordinate.target_dy = 0, 0
         self.coordinate.d2x, self.coordinate.d2y = 0, 0
@@ -38,6 +40,16 @@ class BaseEntity(Sprite):
                          "side": kwargs.get("maxSpeed") // sqrt(2)}
         self.maxAcceleration = {"STARTING": kwargs.get("acceleration")[0],
                                 "STOPPING": kwargs.get("acceleration")[-1]}
+
+    def free(self):
+        self.state["BLOCK_UP"] = False
+        self.state["BLOCK_DOWN"] = False
+        self.state["BLOCK_LEFT"] = False
+        self.state["BLOCK_RIGHT"] = False
+
+    def block(self, sides):
+        for side in sides:
+            self.state[f"BLOCK_{side}"] = True
 
     def startMoveUp(self):
         self.coordinate.target_dy = -self.maxSpeed["orthogonal"]
@@ -131,7 +143,7 @@ class BaseEntity(Sprite):
     def changeImage(self):
         if self.coordinate.dx + self.coordinate.dy != 0:
             self.animCycles += 1
-            if self.animCycles >= 30:
+            if self.animCycles >= 30 * self.blinkPeriod:
                 self.animCycles = 0
                 self.countWhileMoving += 1
         self.image = self.imageKit[self.countWhileMoving % len(self.imageKit)]
@@ -142,4 +154,30 @@ class BaseEntity(Sprite):
         self.pickImageKitAccordingToFacing()
         self.changeImage()
         self.coordinate.update()
-        self.rect.center = self.coordinate.x, self.coordinate.y
+        if self.state["BLOCK_UP"] | self.state["BLOCK_DOWN"] | self.state["BLOCK_LEFT"] | self.state["BLOCK_RIGHT"]:
+            if self.state["BLOCK_UP"]:
+                self.rect.centerx = self.coordinate.x
+                if self.coordinate.y > self.rect.centery:
+                    self.rect.centery = self.coordinate.y
+                else:
+                    self.coordinate.y = self.rect.centery
+            if self.state["BLOCK_DOWN"]:
+                self.rect.centerx = self.coordinate.x
+                if self.coordinate.y < self.rect.centery:
+                    self.rect.centery = self.coordinate.y
+                else:
+                    self.coordinate.y = self.rect.centery
+            if self.state["BLOCK_LEFT"]:
+                self.rect.centery = self.coordinate.y
+                if self.coordinate.x > self.rect.centerx:
+                    self.rect.centerx = self.coordinate.x
+                else:
+                    self.coordinate.x = self.rect.centerx
+            if self.state["BLOCK_RIGHT"]:
+                self.rect.centery = self.coordinate.y
+                if self.coordinate.x < self.rect.centerx:
+                    self.rect.centerx = self.coordinate.x
+                else:
+                    self.coordinate.x = self.rect.centerx
+        else:
+            self.rect.center = self.coordinate.x, self.coordinate.y

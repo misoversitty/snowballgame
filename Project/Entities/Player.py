@@ -20,52 +20,43 @@ class Player(BaseEntity):
         self.state |= {"PREPARING": False,
                        "SHOOTING": False,
                        "RELOADING": False}
-
-    def free(self):
-        self.state["BLOCK_UP"] = False
-        self.state["BLOCK_DOWN"] = False
-        self.state["BLOCK_LEFT"] = False
-        self.state["BLOCK_RIGHT"] = False
-
-    def block(self, sides):
-        for side in sides:
-            self.state[f"BLOCK_{side}"] = True
+        self.blinkPeriod = 0.5
 
     def up(self, **kwargs):
         isPressed = kwargs.get("pressed")
-        if isPressed is True:
+        if isPressed:
             self.startMoveUp()
         else:
             self.stopMoveUp()
 
     def down(self, **kwargs):
         isPressed = kwargs.get("pressed")
-        if isPressed is True:
+        if isPressed:
             self.startMoveDown()
         else:
             self.stopMoveDown()
 
     def left(self, **kwargs):
         isPressed = kwargs.get("pressed")
-        if isPressed is True:
+        if isPressed:
             self.startMoveLeft()
         else:
             self.stopMoveLeft()
 
     def right(self, **kwargs):
         isPressed = kwargs.get("pressed")
-        if isPressed is True:
+        if isPressed:
             self.startMoveRight()
         else:
             self.stopMoveRight()
 
     def shoot(self, **kwargs):
         isPressed = kwargs.get("pressed")
-        if isPressed is True:
+        if isPressed:
             self.state["SHOOTING"] = True
             print(f"Player #{self.No} did pew-thing")
             b = Bullet(facing=self.facing.copy(),
-                       coordinates=(self.coordinate.x, self.coordinate.y))
+                       coordinates=self.rect.center)
             b.rect.center = (500, 600)
             return b
 
