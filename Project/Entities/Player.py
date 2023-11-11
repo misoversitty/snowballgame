@@ -8,6 +8,7 @@ class Player(BaseEntity):
     PLAYER_SPEED = 5
     PLAYER_INERTIA = [1, 1]
     PLAYER_BLINK_PERIOD = 0.5
+    PLAYER_RELOAD_TIME = 5
     BASE_IMAGES = (ImageLoader.loadImage("p1.png"), ImageLoader.loadImage("p12.png"))
 
     def __init__(self, **kwargs):
@@ -18,9 +19,10 @@ class Player(BaseEntity):
         self.No = kwargs.get("number")
         self.control = None
         self.state |= {"PREPARING": False,
-                       "SHOOTING": False,
-                       "RELOADING": False}
-        self.blinkPeriod = 0.5
+                       "RELOADING": False,
+                       "CAN_SHOOT": True}
+        self.blinkPeriod = self.PLAYER_BLINK_PERIOD
+        self.reloadingTime = 0
 
     def up(self, **kwargs):
         isPressed = kwargs.get("pressed")
@@ -52,13 +54,23 @@ class Player(BaseEntity):
 
     def shoot(self, **kwargs):
         isPressed = kwargs.get("pressed")
-        if isPressed:
-            self.state["SHOOTING"] = True
+        if isPressed and self.state.get("CAN_SHOOT"):
+            self.state["RELOADING"] = True
+            self.state["CAN_SHOOT"] = False
             print(f"Player #{self.No} did pew-thing")
-            b = Bullet(facing=self.facing.copy(),
-                       coordinates=self.rect.center)
-            b.rect.center = (500, 600)
-            return b
+            bullet = Bullet(facing=self.facing.copy(),
+                            coordinates=self.rect.center)
+            bullet.rect.center = (500, 600)
+            return bullet
+
+    def updateStates(self):
+        if self.state.get("RELOADING"):
+            self.reloadingTime += 1
+        if self.reloadingTime >= self.PLAYER_RELOAD_TIME * self.FPS:
+            self.state["RELOADING"] = False
+            self.state["CAN_SHOOT"] = True
+            self.reloadingTime = 0
 
     def update(self):
         super().update()
+        self.updateStates()
