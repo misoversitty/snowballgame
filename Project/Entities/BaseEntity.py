@@ -12,6 +12,7 @@ baseImages = (baseImages,)
 
 
 class BaseEntity(Sprite):
+    FPS = 1
     def __init__(self, **kwargs):
         super().__init__()
         self.imageContainer = ImageContainer(*kwargs.get("baseImages", baseImages))
@@ -143,7 +144,7 @@ class BaseEntity(Sprite):
     def changeImage(self):
         if self.coordinate.dx + self.coordinate.dy != 0:
             self.animCycles += 1
-            if self.animCycles >= 30 * self.blinkPeriod:
+            if self.animCycles >= self.FPS * self.blinkPeriod:
                 self.animCycles = 0
                 self.countWhileMoving += 1
         self.image = self.imageKit[self.countWhileMoving % len(self.imageKit)]
