@@ -3,6 +3,8 @@ from Project.Services.CollisionDetector import CollisionDetector
 from Project.Services.PlayerInitializer import PlayerInitializer
 from Project.Settings.Settings import Settings
 from Project.Globals import NUMBER_OF_PLAYERS
+from Project.DataStructures.PlayerGroup import PlayerGroup
+from Project.DataStructures.BulletGroup import BulletGroup
 
 
 settings = Settings()
@@ -10,8 +12,8 @@ settings = Settings()
 
 PLAYERS = PlayerInitializer(count=NUMBER_OF_PLAYERS)
 G_ALL_SPRITES = pygame.sprite.Group()
-G_PLAYERS = pygame.sprite.Group()
-G_BULLETS = pygame.sprite.Group()
+G_PLAYERS = PlayerGroup()
+G_BULLETS = BulletGroup()
 
 
 def setUp():
@@ -19,6 +21,7 @@ def setUp():
     G_PLAYERS.add(p for p in PLAYERS)
     for player in PLAYERS:
         player.control = settings.controlSettings[player.No]
+        player.FPS = settings.screenSettings.FPS
 
 count = 0
 
@@ -69,6 +72,8 @@ class App:
                 else:
                     player.free()
                 player.block(blockedSides)
+                if collisionsWithBullets := CollisionDetector.getCollisions(player, G_BULLETS):
+                    player.kill()
 
 
             G_ALL_SPRITES.update()
