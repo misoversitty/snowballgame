@@ -1,11 +1,15 @@
 from pygame.sprite import Group, spritecollide
+from Project.DataStructures.PlayerGroup import PlayerGroup
+from Project.DataStructures.BulletGroup import BulletGroup
 from Project.Entities.Player import Player
 from Project.Services.Collision import Collision
+from multipledispatch import dispatch
 
 
 class CollisionDetector:
     @staticmethod
-    def getCollisions(player: Player, group: Group):
+    @dispatch(Player, PlayerGroup)
+    def getCollisions(player: Player, group: PlayerGroup):
         result = False
         collisionList = spritecollide(player, group, dokill=False)
         if len(collisionList) > 1:
@@ -18,6 +22,15 @@ class CollisionDetector:
             result = list(map(lambda collidedSprite:
                               Collision(player, collidedSprite),
                               filteredCollisionList))
+        return result
+
+    @staticmethod
+    @dispatch(Player, BulletGroup)
+    def getCollisions(player: Player, group: BulletGroup):
+        result = False
+        collisionList = spritecollide(player, group, dokill=False)
+        if len(collisionList) > 0:
+            result = True
         return result
 
     @staticmethod
