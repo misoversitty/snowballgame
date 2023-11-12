@@ -149,33 +149,52 @@ class BaseEntity(Sprite):
                 self.countWhileMoving += 1
         self.image = self.imageKit[self.countWhileMoving % len(self.imageKit)]
 
-
     def update(self):
         self.calculateFacing()
         self.pickImageKitAccordingToFacing()
         self.changeImage()
         self.coordinate.update()
-        if self.state["BLOCK_UP"] | self.state["BLOCK_DOWN"] | self.state["BLOCK_LEFT"] | self.state["BLOCK_RIGHT"]:
-            if self.state["BLOCK_UP"]:
+        if self.state["BLOCK_UP"] or self.state["BLOCK_DOWN"] or self.state["BLOCK_LEFT"] or self.state["BLOCK_RIGHT"]:
+            if self.state["BLOCK_UP"] and not (self.state["BLOCK_LEFT"] or self.state["BLOCK_RIGHT"]):
                 self.rect.centerx = self.coordinate.x
                 if self.coordinate.y > self.rect.centery:
                     self.rect.centery = self.coordinate.y
                 else:
                     self.coordinate.y = self.rect.centery
-            if self.state["BLOCK_DOWN"]:
+            elif self.state["BLOCK_UP"]:
+                if self.coordinate.y > self.rect.centery:
+                    self.rect.centery = self.coordinate.y
+                else:
+                    self.coordinate.y = self.rect.centery
+            if self.state["BLOCK_DOWN"] and not (self.state["BLOCK_LEFT"] or self.state["BLOCK_RIGHT"]):
                 self.rect.centerx = self.coordinate.x
                 if self.coordinate.y < self.rect.centery:
                     self.rect.centery = self.coordinate.y
                 else:
                     self.coordinate.y = self.rect.centery
-            if self.state["BLOCK_LEFT"]:
+            elif self.state["BLOCK_DOWN"]:
+                if self.coordinate.y < self.rect.centery:
+                    self.rect.centery = self.coordinate.y
+                else:
+                    self.coordinate.y = self.rect.centery
+            if self.state["BLOCK_LEFT"] and not (self.state["BLOCK_UP"] or self.state["BLOCK_DOWN"]):
                 self.rect.centery = self.coordinate.y
                 if self.coordinate.x > self.rect.centerx:
                     self.rect.centerx = self.coordinate.x
                 else:
                     self.coordinate.x = self.rect.centerx
-            if self.state["BLOCK_RIGHT"]:
+            elif self.state["BLOCK_LEFT"]:
+                if self.coordinate.x > self.rect.centerx:
+                    self.rect.centerx = self.coordinate.x
+                else:
+                    self.coordinate.x = self.rect.centerx
+            if self.state["BLOCK_RIGHT"] and not (self.state["BLOCK_UP"] or self.state["BLOCK_DOWN"]):
                 self.rect.centery = self.coordinate.y
+                if self.coordinate.x < self.rect.centerx:
+                    self.rect.centerx = self.coordinate.x
+                else:
+                    self.coordinate.x = self.rect.centerx
+            elif self.state["BLOCK_RIGHT"]:
                 if self.coordinate.x < self.rect.centerx:
                     self.rect.centerx = self.coordinate.x
                 else:
