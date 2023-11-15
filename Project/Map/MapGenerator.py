@@ -1,9 +1,11 @@
 from pygame.rect import Rect
+from Project.DataStructures.Block import Block
+
 
 class MapGenerator:
     size = 800, 600
-    rectangles = []
-    symbolNeedToRecord = "1"
+    blocks = []
+    symbolNeedToRecord = "12"
 
     def __init__(self):
         self.readLines("D:\my shit\ProgProjects\snowballgame\Project\Map\map.txt")
@@ -22,8 +24,8 @@ class MapGenerator:
         for countY, line in enumerate(self.lines):
             for countX, symbol in enumerate(line):
                 if self.isNeedToRecord(symbol):
-                    rectangle = self.makeRectangle(symbol, countX, countY)
-                    self.rectangles.append(rectangle)
+                    block = self.makeBlock(symbol, countX, countY)
+                    self.blocks.append(block)
 
     def isNeedToRecord(self, symbol: str):
         if symbol in self.symbolNeedToRecord:
@@ -31,9 +33,9 @@ class MapGenerator:
         else:
             return False
 
-    def makeRectangle(self, symbol: str, countX, countY):
+    def makeBlock(self, symbol: str, countX, countY):
         countX, countY, sizeX, sizeY = self.recalculateSize(countX, countY, 1, 1)
-        return symbol, Rect(countX, countY, sizeX, sizeY)
+        return Block(symbol, Rect(countX, countY, sizeX, sizeY))
 
     def recalculateSize(self, startPositionX, startPositionY, recordedSizeX, recordedSizeY):
         return startPositionX * self.scaleX, startPositionY * self.scaleY, recordedSizeX * self.scaleX, recordedSizeY * self.scaleY

@@ -8,7 +8,7 @@ class Player(BaseEntity):
     PLAYER_SPEED = 5
     PLAYER_INERTIA = [1, 1]
     PLAYER_BLINK_PERIOD = 0.5
-    PLAYER_RELOAD_TIME = 5
+    PLAYER_RELOAD_TIME = 0
     BASE_IMAGES = (ImageLoader.loadImage("p1.png"), ImageLoader.loadImage("p12.png"))
 
     def __init__(self, **kwargs):
@@ -59,9 +59,19 @@ class Player(BaseEntity):
             self.state["CAN_SHOOT"] = False
             print(f"Player #{self.No} did pew-thing")
             bullet = Bullet(facing=self.facing.copy(),
-                            coordinates=self.rect.center)
+                            coordinates=self.getGunpoint())
             bullet.rect.center = (500, 600)
             return bullet
+
+    def getGunpoint(self):
+        if self.facing() == (0, -1):
+            return self.rect.midtop
+        elif self.facing() == (0, 1):
+            return self.rect.midbottom
+        elif self.facing() == (-1, 0):
+            return self.rect.midleft
+        elif self.facing() == (1, 0):
+            return self.rect.midright
 
     def updateStates(self):
         if self.state.get("RELOADING"):

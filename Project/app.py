@@ -7,6 +7,7 @@ from Project.DataStructures.PlayerGroup import PlayerGroup
 from Project.DataStructures.BulletGroup import BulletGroup
 from Project.DataStructures.ObstacleGroup import ObstacleGroup
 from Project.Map.MapGenerator import MapGenerator
+from Project.Obstacles.ObstacleFactory import ObstacleFactory
 
 
 settings = Settings()
@@ -19,23 +20,18 @@ G_BULLETS = BulletGroup()
 G_OBSTACLES = ObstacleGroup()
 
 
-
-mapGen = MapGenerator()
-for rect in mapGen.rectangles:
-    sprite = pygame.sprite.Sprite()
-    sprite.image = pygame.Surface((rect[1][2], rect[1][3]))
-    sprite.image.fill([205, 133, 63])
-    sprite.rect = sprite.image.get_rect()
-    sprite.rect.topleft = rect[1][0], rect[1][1]
-    G_ALL_SPRITES.add(sprite)
-    G_OBSTACLES.add(sprite)
-
 def setUp():
     G_ALL_SPRITES.add(p for p in PLAYERS)
     G_PLAYERS.add(p for p in PLAYERS)
     for player in PLAYERS:
         player.control = settings.controlSettings[player.No]
         player.FPS = settings.screenSettings.FPS
+    mapGen = MapGenerator()
+    obstacleFactory = ObstacleFactory()
+    for block in mapGen.blocks:
+        obstacle = obstacleFactory.makeObstacle(block)
+        G_ALL_SPRITES.add(obstacle)
+        G_OBSTACLES.add(obstacle)
 
 count = 0
 
