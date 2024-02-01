@@ -4,10 +4,7 @@ from Project.DataStructures.Block import Block
 
 
 class ObstacleFactory:
-    def __init__(self):
-        pass
-
-    def makeObstacle(self, block: Block):
+    def __new__(cls, block: Block):
         if block.type == '1':
             return Obstacle(block=block)
         elif block.type == '2':
