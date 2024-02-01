@@ -1,5 +1,6 @@
-from Project.Globals import SETTINGS_DIRECTORY
 from pathlib import Path
+
+from Project.Globals import SETTINGS_DIRECTORY
 
 
 class SettingsLoader:

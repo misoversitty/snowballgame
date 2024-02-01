@@ -14,16 +14,18 @@ class Bullet(BaseEntity):
         self.facing = kwargs.get("facing")
         self.correctCoordinate()
         self.start()
+        self.master = None
 
     def correctCoordinate(self):
+        self.rect = self.image.get_rect()
         if self.facing() == (0, -1):
-            self.rect.midright = self.coordinate.x, self.coordinate.y
-        elif self.facing() == (0, 1):
-            self.rect.midleft = self.coordinate.x, self.coordinate.y
-        elif self.facing() == (-1, 0):
-            self.rect.midtop = self.coordinate.x, self.coordinate.y
-        elif self.facing() == (1, 0):
             self.rect.midbottom = self.coordinate.x, self.coordinate.y
+        elif self.facing() == (0, 1):
+            self.rect.midtop = self.coordinate.x, self.coordinate.y
+        elif self.facing() == (-1, 0):
+            self.rect.midright = self.coordinate.x, self.coordinate.y
+        elif self.facing() == (1, 0):
+            self.rect.midleft = self.coordinate.x, self.coordinate.y
 
     def start(self):
         if self.facing.x == -1:

@@ -1,4 +1,5 @@
 from pygame.rect import Rect
+
 from Project.DataStructures.Block import Block
 
 
@@ -8,7 +9,7 @@ class MapGenerator:
     symbolNeedToRecord = "12"
 
     def __init__(self):
-        self.readLines("D:\my shit\ProgProjects\snowballgame\Project\Map\map.txt")
+        self.readLines("/home/misoversit/PycharmProjects/snowballgame/Project/Map/map.txt")
         self.calculateScale()
         self.createListOfRectangles()
 

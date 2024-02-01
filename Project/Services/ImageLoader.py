@@ -1,6 +1,7 @@
-from Project.Globals import RESOURCES_DIRECTORY
 from pathlib import Path
 from pygame import image, transform
+
+from Project.Globals import RESOURCES_DIRECTORY
 
 
 class ImageLoader:

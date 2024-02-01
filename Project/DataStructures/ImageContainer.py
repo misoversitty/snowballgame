@@ -1,6 +1,8 @@
-from Project.Services.ImageLoader import ImageLoader
 import numpy as np
 from pygame import Surface
+
+from Project.Services.ImageLoader import ImageLoader
+
 
 class ImageContainer:
     def __init__(self, *images):

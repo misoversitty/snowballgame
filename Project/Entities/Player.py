@@ -1,4 +1,5 @@
 from random import randint
+
 from Project.Entities.Bullet import Bullet
 from Project.Entities.BaseEntity import BaseEntity
 from Project.Services.ImageLoader import ImageLoader
@@ -23,6 +24,7 @@ class Player(BaseEntity):
                        "CAN_SHOOT": True}
         self.blinkPeriod = self.PLAYER_BLINK_PERIOD
         self.reloadingTime = 0
+        self.bulletPadding = 10
 
     def up(self, **kwargs):
         isPressed = kwargs.get("pressed")
@@ -60,18 +62,17 @@ class Player(BaseEntity):
             print(f"Player #{self.No} did pew-thing")
             bullet = Bullet(facing=self.facing.copy(),
                             coordinates=self.getGunpoint())
-            bullet.rect.center = (500, 600)
             return bullet
 
     def getGunpoint(self):
         if self.facing() == (0, -1):
-            return self.rect.midtop
+            return self.rect.midtop[0], self.rect.midtop[1] - self.bulletPadding
         elif self.facing() == (0, 1):
-            return self.rect.midbottom
+            return self.rect.midbottom[0], self.rect.midbottom[1] + self.bulletPadding
         elif self.facing() == (-1, 0):
-            return self.rect.midleft
+            return self.rect.midleft[0] - self.bulletPadding, self.rect.midleft[1]
         elif self.facing() == (1, 0):
-            return self.rect.midright
+            return self.rect.midright[0] + self.bulletPadding, self.rect.midright[1]
 
     def updateStates(self):
         if self.state.get("RELOADING"):

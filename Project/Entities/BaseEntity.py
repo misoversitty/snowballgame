@@ -1,7 +1,8 @@
+from math import sqrt
 from pygame import Surface
 from pygame.sprite import Sprite
+
 from Project.DataStructures.Coordinate import Coordinate
-from math import sqrt
 from Project.DataStructures.Facing import Facing
 from Project.DataStructures.ImageContainer import ImageContainer
 
@@ -13,6 +14,7 @@ baseImages = (baseImages,)
 
 class BaseEntity(Sprite):
     FPS = 1
+
     def __init__(self, **kwargs):
         super().__init__()
         self.imageContainer = ImageContainer(*kwargs.get("baseImages", baseImages))
@@ -152,6 +154,7 @@ class BaseEntity(Sprite):
     def update(self):
         self.calculateFacing()
         self.pickImageKitAccordingToFacing()
+        self.image.get_rect()
         self.changeImage()
         self.coordinate.update()
         if self.state["BLOCK_UP"] or self.state["BLOCK_DOWN"] or self.state["BLOCK_LEFT"] or self.state["BLOCK_RIGHT"]:

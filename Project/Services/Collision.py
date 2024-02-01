@@ -1,7 +1,8 @@
 import pygame
+
 from Project.Entities.Player import Player
 
-delta = [7, 5]
+delta = [4, 5]
 
 class Collision:
     def __init__(self, mainSprite: pygame.sprite, obstacle: pygame.sprite):

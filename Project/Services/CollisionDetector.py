@@ -1,11 +1,13 @@
 from pygame.sprite import Group, spritecollide
+from multipledispatch import dispatch
+
 from Project.DataStructures.PlayerGroup import PlayerGroup
 from Project.DataStructures.BulletGroup import BulletGroup
 from Project.DataStructures.ObstacleGroup import ObstacleGroup
 from Project.Entities.Player import Player
 from Project.Entities.Bullet import Bullet
 from Project.Services.Collision import Collision
-from multipledispatch import dispatch
+
 
 
 class CollisionDetector:
