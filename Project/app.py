@@ -1,6 +1,7 @@
 import pygame
+
 from Project.Services.CollisionDetector import CollisionDetector
-from Project.Services.PlayerInitializer import PlayerInitializer
+from Project.Services.PlayerFactory import PlayerFactory
 from Project.Settings.Settings import Settings
 from Project.Globals import NUMBER_OF_PLAYERS
 from Project.DataStructures.PlayerGroup import PlayerGroup
@@ -13,27 +14,11 @@ from Project.Obstacles.ObstacleFactory import ObstacleFactory
 settings = Settings()
 
 
-PLAYERS = PlayerInitializer(count=NUMBER_OF_PLAYERS)
+PLAYERS = PlayerFactory(count=NUMBER_OF_PLAYERS)
 G_ALL_SPRITES = pygame.sprite.Group()
 G_PLAYERS = PlayerGroup()
 G_BULLETS = BulletGroup()
 G_OBSTACLES = ObstacleGroup()
-
-
-def setUp():
-    G_ALL_SPRITES.add(p for p in PLAYERS)
-    G_PLAYERS.add(p for p in PLAYERS)
-    for player in PLAYERS:
-        player.control = settings.controlSettings[player.No]
-        player.FPS = settings.screenSettings.FPS
-    mapGen = MapGenerator()
-    obstacleFactory = ObstacleFactory()
-    for block in mapGen.blocks:
-        obstacle = obstacleFactory.makeObstacle(block)
-        G_ALL_SPRITES.add(obstacle)
-        G_OBSTACLES.add(obstacle)
-
-count = 0
 
 
 class App:
@@ -45,8 +30,19 @@ class App:
         self.clock = pygame.time.Clock()
         self.running = True
 
+    def setUp(self):
+        G_ALL_SPRITES.add(p for p in PLAYERS)
+        G_PLAYERS.add(p for p in PLAYERS)
+        for player in PLAYERS:
+            player.control = settings.controlSettings[player.No]
+            player.FPS = settings.screenSettings.FPS
+        for block in MapGenerator().blocks:
+            obstacle = ObstacleFactory(block)
+            G_ALL_SPRITES.add(obstacle)
+            G_OBSTACLES.add(obstacle)
+
     def run(self):
-        setUp()
+        self.setUp()
         while self.running:
             self.clock.tick(settings.screenSettings.FPS)
             for event in pygame.event.get():
